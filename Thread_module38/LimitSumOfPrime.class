@@ -1,0 +1,88 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class PrimeSumCalculator {
+
+    public static void main(String[] args) {
+        int limit = 100; // You can change this limit to any value
+        int numberOfThreads = 4; // Number of threads to use
+
+        // Create and start the prime sum calculation threads
+        PrimeSumTask[] tasks = new PrimeSumTask[numberOfThreads];
+        Thread[] threads = new Thread[numberOfThreads];
+
+        int range = limit / numberOfThreads;
+        int start = 2;
+
+        for (int i = 0; i < numberOfThreads; i++) {
+            int end = (i == numberOfThreads - 1) ? limit : start + range - 1;
+            tasks[i] = new PrimeSumTask(start, end);
+            threads[i] = new Thread(tasks[i]);
+            threads[i].start();
+            start = end + 1;
+        }
+
+        // Wait for all threads to finish
+        for (Thread thread : threads) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Calculate the total sum of primes
+        int totalSum = 0;
+        for (PrimeSumTask task : tasks) {
+            totalSum += task.getSum();
+        }
+
+        // Print the final result
+        System.out.println("The sum of all prime numbers up to " + limit + " is: " + totalSum);
+    }
+}
+
+// Task to calculate the sum of prime numbers in a given range
+class PrimeSumTask implements Runnable {
+    private int start;
+    private int end;
+    private int sum;
+
+    // Constructor to initialize start and end of the range
+    public PrimeSumTask(int start, int end) {
+        this.start = start;
+        this.end = end;
+        this.sum = 0;
+    }
+
+    @Override
+    public void run() {
+        for (int i = start; i <= end; i++) {
+            if (isPrime(i)) {
+                sum += i;
+            }
+        }
+    }
+
+    // Method to check if a number is prime
+    private boolean isPrime(int number) {
+        if (number <= 1) {
+            return false;
+        }
+        for (int i = 2; i <= Math.sqrt(number); i++) {
+            if (number % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Method to get the sum of primes calculated by this task
+    public int getSum() {
+        return sum;
+    }
+}
+
+output:
+
+The sum of all prime numbers up to 100 is: 1060

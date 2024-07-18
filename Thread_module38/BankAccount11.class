@@ -1,0 +1,108 @@
+// BankAccount class to handle deposits and withdrawals
+class BankAccount {
+    private int balance;
+
+    // Constructor to initialize balance
+    public BankAccount(int initialBalance) {
+        balance = initialBalance;
+    }
+
+    // Synchronized method to deposit money
+    public synchronized void deposit(int amount) {
+        balance += amount;
+        System.out.println("Deposited: " + amount + ", New Balance: " + balance);
+    }
+
+    // Synchronized method to withdraw money
+    public synchronized void withdraw(int amount) {
+        if (balance >= amount) {
+            balance -= amount;
+            System.out.println("Withdrew: " + amount + ", New Balance: " + balance);
+        } else {
+            System.out.println("Withdrawal of " + amount + " failed due to insufficient funds, Current Balance: " + balance);
+        }
+    }
+
+    // Method to get the current balance
+    public int getBalance() {
+        return balance;
+    }
+}
+
+// Runnable class for deposit operations
+class DepositRunnable implements Runnable {
+    private BankAccount account;
+    private int amount;
+
+    // Constructor to initialize account and amount
+    public DepositRunnable(BankAccount account, int amount) {
+        this.account = account;
+        this.amount = amount;
+    }
+
+    @Override
+    public void run() {
+        account.deposit(amount);
+    }
+}
+
+// Runnable class for withdrawal operations
+class WithdrawRunnable implements Runnable {
+    private BankAccount account;
+    private int amount;
+
+    // Constructor to initialize account and amount
+    public WithdrawRunnable(BankAccount account, int amount) {
+        this.account = account;
+        this.amount = amount;
+    }
+
+    @Override
+    public void run() {
+        account.withdraw(amount);
+    }
+}
+
+// Main class to run the program
+public class BankAccountSimulation {
+    public static void main(String[] args) {
+        // Create a bank account with an initial balance of 1000
+        BankAccount account = new BankAccount(1000);
+
+        // Create and start deposit and withdrawal threads
+        Thread depositThread1 = new Thread(new DepositRunnable(account, 200));
+        Thread depositThread2 = new Thread(new DepositRunnable(account, 300));
+        Thread withdrawThread1 = new Thread(new WithdrawRunnable(account, 150));
+        Thread withdrawThread2 = new Thread(new WithdrawRunnable(account, 500));
+        Thread withdrawThread3 = new Thread(new WithdrawRunnable(account, 700));
+
+        depositThread1.start();
+        depositThread2.start();
+        withdrawThread1.start();
+        withdrawThread2.start();
+        withdrawThread3.start();
+
+        // Join the threads to ensure all operations are complete before printing final balance
+        try {
+            depositThread1.join();
+            depositThread2.join();
+            withdrawThread1.join();
+            withdrawThread2.join();
+            withdrawThread3.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Print the final balance
+        System.out.println("Final Balance: " + account.getBalance());
+    }
+}
+
+output:
+
+Deposited: 200, New Balance: 1200
+Deposited: 300, New Balance: 1500
+Withdrew: 150, New Balance: 1350
+Withdrew: 500, New Balance: 850
+Withdrawal of 700 failed due to insufficient funds, Current Balance: 850
+Final Balance: 850

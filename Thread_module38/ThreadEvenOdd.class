@@ -1,0 +1,63 @@
+public class EvenOddPrinter {
+    public static void main(String[] args) {
+        // Create and start the even numbers thread
+        Thread evenThread = new Thread(new EvenNumbers());
+        evenThread.start();
+        
+        // Create and start the odd numbers thread
+        Thread oddThread = new Thread(new OddNumbers());
+        oddThread.start();
+    }
+}
+
+class EvenNumbers implements Runnable {
+    @Override
+    public void run() {
+        // Loop through numbers 1 to 20
+        for (int i = 1; i <= 20; i++) {
+            // Check if the number is even
+            if (i % 2 == 0) {
+                // Print the even number
+                System.out.println("Even: " + i);
+            }
+        }
+    }
+}
+
+class OddNumbers implements Runnable {
+    @Override
+    public void run() {
+        // Loop through numbers 1 to 20
+        for (int i = 1; i <= 20; i++) {
+            // Check if the number is odd
+            if (i % 2 != 0) {
+                // Print the odd number
+                System.out.println("Odd: " + i);
+            }
+        }
+    }
+}
+
+output:
+
+Odd: 1
+Odd: 3
+Even: 2
+Odd: 5
+Even: 4
+Odd: 7
+Even: 6
+Odd: 9
+Even: 8
+Odd: 11
+Even: 10
+Odd: 13
+Even: 12
+Odd: 15
+Even: 14
+Odd: 17
+Even: 16
+Odd: 19
+Even: 18
+Odd: 21
+Even: 20
